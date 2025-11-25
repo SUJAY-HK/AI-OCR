@@ -1,0 +1,774 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'app/style.css' %}" />
+<style>
+  /* Audio Summary Styles */
+  .audio-summary-section {
+    margin-top: 15px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+  }
+
+  .audio-summary-section h4 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #333;
+    font-weight: 600;
+  }
+
+  .language-selector {
+    margin: 10px 0;
+  }
+
+  .language-selector label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: #555;
+  }
+
+  .language-buttons {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .lang-btn {
+    padding: 8px 6px;
+    border: 2px solid #ddd;
+    background: white;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: 500;
+    transition: all 0.2s;
+    text-align: center;
+  }
+
+  .lang-btn:hover {
+    border-color: #007bff;
+    background: #f0f8ff;
+  }
+
+  .lang-btn.active {
+    border-color: #007bff;
+    background: #007bff;
+    color: white;
+  }
+
+  .lang-btn .flag {
+    font-size: 16px;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .audio-status {
+    padding: 8px;
+    margin: 8px 0;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+    display: none;
+  }
+
+  .audio-status.show {
+    display: block;
+  }
+
+  .audio-status.loading {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #ffeaa7;
+  }
+
+  .audio-status.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+  }
+
+  .audio-status.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+
+  .audio-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 8px 0;
+  }
+
+  .audio-btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    width: 100%;
+  }
+
+  .audio-btn-primary {
+    background: #007bff;
+    color: white;
+  }
+
+  .audio-btn-primary:hover:not(:disabled) {
+    background: #0056b3;
+  }
+
+  .audio-btn-secondary {
+    background: #6c757d;
+    color: white;
+  }
+
+  .audio-btn-secondary:hover:not(:disabled) {
+    background: #545b62;
+  }
+
+  .audio-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .audio-player {
+    background: white;
+    padding: 12px;
+    border-radius: 6px;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    display: none;
+  }
+
+  .audio-player.show {
+    display: block;
+  }
+
+  #audio-element {
+    width: 100%;
+    margin-bottom: 10px;
+    height: 32px;
+  }
+
+  .audio-controls {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .btn-audio-control {
+    padding: 6px 12px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: background 0.2s;
+  }
+
+  .btn-audio-control:hover {
+    background: #218838;
+  }
+
+  #audio-time {
+    font-size: 12px;
+    color: #666;
+    margin-left: auto;
+    padding: 6px 0;
+  }
+
+  .current-language {
+    font-size: 11px;
+    color: #666;
+    margin-top: 4px;
+    font-style: italic;
+  }
+</style>
+
+<body>
+  {% include 'navbar.html' %}
+
+  <div
+    id="controls"
+    style="
+      position: fixed;
+      top: 60px;
+      left: 10px;
+      z-index: 999;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 8px;
+      border-radius: 4px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      max-width: 420px;
+      max-height: calc(100vh - 70px);
+      overflow-y: auto;
+    "
+  >
+    <input
+      id="sketchName"
+      type="text"
+      value="{{ sketch_name }}"
+      placeholder="Sketch name"
+      style="margin-bottom: 4px; width: 200px"
+    /><br />
+    <button id="undoBtn" style="">↶ Undo</button>
+    <button id="saveBtn">💾 Save</button>
+    <button id="eraserBtn">🧽 Eraser</button><br />
+    <button id="clearAllBtn" style="margin-top: 6px; background-color: #f88">
+      🗑️ Clear All
+    </button>
+
+    <button id="ocrBtn">🧠 Extract Equations from Sketch</button>
+    <div
+      id="ocrResult"
+      style="
+        margin-top: 12px;
+        padding: 10px;
+        background: #f1f1f1;
+        max-width: 400px;
+        white-space: pre-wrap;
+        max-height: 200px;
+        overflow-y: auto;
+      "
+    ></div>
+
+    <!-- Audio Summary Section -->
+    <div class="audio-summary-section">
+      <h4>🔊 Audio Summary</h4>
+
+      <!-- Language Selector -->
+      <div class="language-selector">
+        <label>Select Language:</label>
+        <div class="language-buttons" id="language-buttons">
+          <!-- Language buttons will be loaded here dynamically -->
+        </div>
+        <div class="current-language" id="current-language">
+          Selected: English
+        </div>
+      </div>
+
+      <div id="audio-status" class="audio-status"></div>
+
+      <div class="audio-actions">
+        <button id="generate-audio-btn" class="audio-btn audio-btn-primary">
+          Generate Audio Summary
+        </button>
+        <button id="ocr-and-audio-btn" class="audio-btn audio-btn-secondary">
+          OCR + Audio (Combined)
+        </button>
+      </div>
+
+      <div id="audio-player-container" class="audio-player"></div>
+    </div>
+
+    <label
+      >Brush:
+      <input id="brushWidth" type="range" min="1" max="20" value="2" /></label
+    ><br />
+    <label
+      >Eraser: <input id="eraserWidth" type="range" min="5" max="50" value="20"
+    /></label>
+  </div>
+
+  <canvas
+    id="fabricCanvas"
+    style="position: absolute; top: 0; left: 0"
+  ></canvas>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+  <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+
+  <script>
+    window.onload = async () => {
+      const userColor = "{{ user_color }}";
+      const currentUserId = {{ user_id }};
+      let isErasing = false;
+      let sketchId = {{ sketch_id }};
+      const savedStrokes = JSON.parse(`{{ saved_strokes_json|escapejs }}`);
+      const undoStack = [];
+
+      // Audio player state
+      let audioPlayer = null;
+      let isPlaying = false;
+      let selectedLanguage = 'en'; // Default language
+      let supportedLanguages = [];
+
+      const canvas = new fabric.Canvas('fabricCanvas', {
+        isDrawingMode: true,
+        backgroundColor: '#ffffff'
+      });
+
+      function resizeCanvas() {
+        canvas.setWidth(window.innerWidth);
+        canvas.setHeight(window.innerHeight);
+      }
+
+      window.addEventListener('resize', resizeCanvas);
+      resizeCanvas();
+
+      const brushWidthInput = document.getElementById('brushWidth');
+      const eraserWidthInput = document.getElementById('eraserWidth');
+      const undoBtn = document.getElementById('undoBtn');
+      const saveBtn = document.getElementById('saveBtn');
+      const eraserBtn = document.getElementById('eraserBtn');
+      const nameInput = document.getElementById('sketchName');
+      const clearAllBtn = document.getElementById('clearAllBtn');
+
+      function makePencil() {
+        const b = new fabric.PencilBrush(canvas);
+        b.color = userColor;
+        b.width = parseInt(brushWidthInput.value, 10);
+        return b;
+      }
+
+      canvas.freeDrawingBrush = makePencil();
+
+      eraserBtn.addEventListener('click', () => {
+        isErasing = !isErasing;
+        canvas.isDrawingMode = !isErasing;
+        eraserBtn.style.background = isErasing ? '#fdd' : '';
+      });
+
+      brushWidthInput.addEventListener('input', () => {
+        if (!isErasing) canvas.freeDrawingBrush.width = parseInt(brushWidthInput.value, 10);
+      });
+
+      function eraseAt(pointer) {
+        const objects = canvas.getObjects();
+        for (let i = objects.length - 1; i >= 0; i--) {
+          const obj = objects[i];
+          if (obj.type === 'path') {
+            const bb = obj.getBoundingRect();
+            if (pointer.x >= bb.left && pointer.x <= bb.left + bb.width &&
+                pointer.y >= bb.top && pointer.y <= bb.top + bb.height) {
+              canvas.remove(obj);
+              undoStack.push({ type: 'remove', object: obj });
+            }
+          }
+        }
+      }
+
+      clearAllBtn.addEventListener('click', async () => {
+        if (!confirm("Are you sure you want to clear all strokes?")) return;
+        canvas.clear();
+        canvas.setBackgroundColor('#ffffff', canvas.renderAll.bind(canvas));
+        undoStack.length = 0;
+        savedStrokes.length = 0;
+
+        const resp = await fetch(`/clear-sketch/${sketchId}/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+          }
+        });
+
+        const result = await resp.json();
+        alert(result.success ? "Cleared." : "Failed.");
+      });
+
+      canvas.on('mouse:down', opt => {
+        if (isErasing) eraseAt(opt.pointer);
+      });
+      canvas.on('mouse:move', opt => {
+        if (isErasing && opt.pointer) eraseAt(opt.pointer);
+      });
+
+      // Replay strokes
+      for (let s of savedStrokes) {
+        const pathStr = `M ${s.x1} ${s.y1} L ${s.x2} ${s.y2}`;
+        const path = new fabric.Path(pathStr, {
+          stroke: s.eraser ? '#ffffff' : s.color,
+          strokeWidth: s.width || 2,
+          fill: null,
+          selectable: false,
+          evented: false,
+          globalCompositeOperation: s.eraser ? 'destination-out' : 'source-over'
+        });
+        canvas.add(path);
+        undoStack.push({ type: 'add', object: path });
+      }
+
+      const proto = location.protocol === 'https:' ? 'wss://' : 'ws://';
+      const ws = new WebSocket(`${proto}${location.host}/ws/sketch/${sketchId}/`);
+
+      ws.onmessage = e => {
+        const d = JSON.parse(e.data);
+        const pathStr = `M ${d.x1} ${d.y1} L ${d.x2} ${d.y2}`;
+        const path = new fabric.Path(pathStr, {
+          stroke: d.eraser ? '#ffffff' : d.color,
+          strokeWidth: d.width,
+          fill: null,
+          selectable: false,
+          evented: false,
+          globalCompositeOperation: d.eraser ? 'destination-out' : 'source-over'
+        });
+        canvas.add(path);
+        undoStack.push({ type: 'add', object: path });
+      };
+
+      canvas.on('path:created', opt => {
+        if (isErasing) return;
+        const path = opt.path;
+        const pts = path.path;
+        const w = path.strokeWidth;
+
+        for (let i = 1; i < pts.length; i++) {
+          const [, x1, y1] = pts[i - 1];
+          const [, x2, y2] = pts[i];
+          const stroke = {
+            x1, y1, x2, y2,
+            color: userColor,
+            eraser: false,
+            width: w,
+            user: currentUserId
+          };
+          savedStrokes.push(stroke);
+          ws.send(JSON.stringify(stroke));
+        }
+
+        undoStack.push({ type: 'add', object: path });
+      });
+
+      undoBtn.addEventListener('click', () => {
+        const op = undoStack.pop();
+        if (!op) return;
+        if (op.type === 'add') canvas.remove(op.object);
+        else if (op.type === 'remove') canvas.add(op.object);
+      });
+
+      saveBtn.addEventListener('click', async () => {
+        const imageData = canvas.toDataURL({ format: 'png' });
+        const payload = {
+          id: sketchId,
+          image: imageData,
+          strokes: savedStrokes,
+          name: nameInput.value.trim()
+        };
+        const resp = await fetch('/save-sketch/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken')
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await resp.json();
+        if (result.id) sketchId = result.id;
+        if (result.name) nameInput.value = result.name;
+        alert('Saved sketch: ' + result.status);
+      });
+
+      function getCookie(name) {
+        let v = null;
+        document.cookie.split(';').forEach(c => {
+          const cTrimmed = c.trim();
+          if (cTrimmed.startsWith(name + '=')) {
+            v = decodeURIComponent(cTrimmed.slice(name.length + 1));
+          }
+        });
+        return v;
+      }
+
+      const ocrBtn = document.getElementById('ocrBtn');
+      const ocrResultDiv = document.getElementById('ocrResult');
+
+      ocrBtn.addEventListener('click', async () => {
+        ocrBtn.innerText = "⏳ Extracting...";
+        const resp = await fetch(`/upload-ocr/${sketchId}/`, {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+          }
+        });
+
+        const data = await resp.json();
+
+        if (data.text) {
+          ocrResultDiv.innerHTML = "<strong>📄 Extracted Text:</strong><br>" + data.text.join("<br>");
+        } else {
+          ocrResultDiv.innerHTML = `<span style="color:red;">❌ ${data.error || 'Failed to extract text.'}</span>`;
+        }
+
+        ocrBtn.innerText = "🧠 Extract Equations from Sketch";
+      });
+
+      // ============================================
+      // MULTI-LANGUAGE AUDIO FUNCTIONS
+      // ============================================
+
+      /**
+       * Load supported languages and create buttons
+       */
+      async function loadLanguages() {
+        try {
+          const response = await fetch('/supported-languages/');
+          const data = await response.json();
+          supportedLanguages = data.languages;
+
+          const container = document.getElementById('language-buttons');
+          container.innerHTML = '';
+
+          supportedLanguages.forEach(lang => {
+            const btn = document.createElement('button');
+            btn.className = 'lang-btn';
+            btn.dataset.lang = lang.code;
+            btn.innerHTML = `
+              <span class="flag">${lang.flag}</span>
+              <span>${lang.name}</span>
+            `;
+
+            if (lang.code === selectedLanguage) {
+              btn.classList.add('active');
+            }
+
+            btn.addEventListener('click', () => selectLanguage(lang.code, lang.name));
+            container.appendChild(btn);
+          });
+        } catch (error) {
+          console.error('Error loading languages:', error);
+        }
+      }
+
+      /**
+       * Select a language
+       */
+      function selectLanguage(code, name) {
+        selectedLanguage = code;
+
+        // Update button states
+        document.querySelectorAll('.lang-btn').forEach(btn => {
+          btn.classList.remove('active');
+          if (btn.dataset.lang === code) {
+            btn.classList.add('active');
+          }
+        });
+
+        // Update display
+        document.getElementById('current-language').textContent = `Selected: ${name}`;
+      }
+
+      /**
+       * Show status message
+       */
+      function showAudioStatus(message, type = 'loading') {
+        const statusDiv = document.getElementById('audio-status');
+        statusDiv.textContent = message;
+        statusDiv.className = `audio-status ${type} show`;
+      }
+
+      /**
+       * Hide status message
+       */
+      function hideAudioStatus() {
+        const statusDiv = document.getElementById('audio-status');
+        statusDiv.className = 'audio-status';
+      }
+
+      /**
+       * Format time in MM:SS format
+       */
+      function formatTime(seconds) {
+        if (isNaN(seconds)) return '0:00';
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+      }
+
+      /**
+       * Display audio player
+       */
+      function displayAudioPlayer(audioUrl, languageName) {
+        const playerContainer = document.getElementById('audio-player-container');
+
+        playerContainer.innerHTML = `
+          <div style="font-size: 11px; color: #666; margin-bottom: 8px;">
+            🎧 Audio in: <strong>${languageName}</strong>
+          </div>
+          <audio id="audio-element" controls>
+            <source src="${audioUrl}" type="audio/mpeg">
+            Your browser does not support the audio element.
+          </audio>
+          <div class="audio-controls">
+            <button id="play-pause-btn" class="btn-audio-control">▶ Play</button>
+            <button id="download-audio-btn" class="btn-audio-control">⬇ Download</button>
+            <span id="audio-time">0:00 / 0:00</span>
+          </div>
+        `;
+
+        playerContainer.classList.add('show');
+
+        audioPlayer = document.getElementById('audio-element');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const downloadBtn = document.getElementById('download-audio-btn');
+        const timeDisplay = document.getElementById('audio-time');
+
+        // Play/Pause
+        playPauseBtn.addEventListener('click', () => {
+          if (isPlaying) {
+            audioPlayer.pause();
+            playPauseBtn.textContent = '▶ Play';
+            isPlaying = false;
+          } else {
+            audioPlayer.play();
+            playPauseBtn.textContent = '⏸ Pause';
+            isPlaying = true;
+          }
+        });
+
+        // Download
+        downloadBtn.addEventListener('click', () => {
+          const link = document.createElement('a');
+          link.href = audioUrl;
+          link.download = `sketch_${sketchId}_${selectedLanguage}_audio.mp3`;
+          link.click();
+        });
+
+        // Update time
+        audioPlayer.addEventListener('timeupdate', () => {
+          const current = formatTime(audioPlayer.currentTime);
+          const duration = formatTime(audioPlayer.duration);
+          timeDisplay.textContent = `${current} / ${duration}`;
+        });
+
+        audioPlayer.addEventListener('ended', () => {
+          isPlaying = false;
+          playPauseBtn.textContent = '▶ Play';
+        });
+      }
+
+      /**
+       * Generate audio summary in selected language
+       */
+      async function generateAudioSummary() {
+        const generateBtn = document.getElementById('generate-audio-btn');
+        const langName = supportedLanguages.find(l => l.code === selectedLanguage)?.name || 'English';
+
+        generateBtn.disabled = true;
+        generateBtn.textContent = 'Generating...';
+        showAudioStatus(`Generating audio in ${langName}...`, 'loading');
+
+        try {
+          const response = await fetch(`/generate-audio/${sketchId}/`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+              language: selectedLanguage
+            })
+          });
+
+          const data = await response.json();
+
+          if (response.ok && data.status === 'success') {
+            showAudioStatus(`Audio ready in ${data.language_name}!`, 'success');
+            displayAudioPlayer(data.audio_url, data.language_name);
+            generateBtn.textContent = 'Regenerate Audio';
+
+            setTimeout(() => hideAudioStatus(), 3000);
+          } else {
+            throw new Error(data.error || 'Failed to generate audio');
+          }
+        } catch (error) {
+          console.error('Error generating audio:', error);
+          showAudioStatus(`Error: ${error.message}`, 'error');
+        } finally {
+          generateBtn.disabled = false;
+        }
+      }
+
+      /**
+       * Combined OCR and Audio generation
+       */
+      async function uploadAndGenerateAudio() {
+        const combinedBtn = document.getElementById('ocr-and-audio-btn');
+        const langName = supportedLanguages.find(l => l.code === selectedLanguage)?.name || 'English';
+
+        combinedBtn.disabled = true;
+        combinedBtn.textContent = 'Processing...';
+        showAudioStatus(`Running OCR and generating audio in ${langName}...`, 'loading');
+
+        try {
+          const response = await fetch(`/upload-and-audio/${sketchId}/`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({
+              language: selectedLanguage
+            })
+          });
+
+          const data = await response.json();
+
+          if (response.ok && data.status === 'success') {
+            // Display OCR results
+            if (data.text) {
+              ocrResultDiv.innerHTML = "<strong>📄 Extracted Text:</strong><br>" + data.text.join("<br>");
+            }
+
+            // Display audio player
+            displayAudioPlayer(data.audio_url, data.language_name);
+
+            showAudioStatus(`OCR and Audio completed in ${data.language_name}!`, 'success');
+            combinedBtn.textContent = 'OCR + Audio (Combined)';
+
+            setTimeout(() => hideAudioStatus(), 3000);
+          } else {
+            throw new Error(data.error || 'Failed to process');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          showAudioStatus(`Error: ${error.message}`, 'error');
+          combinedBtn.textContent = 'OCR + Audio (Combined)';
+        } finally {
+          combinedBtn.disabled = false;
+        }
+      }
+
+      /**
+       * Check if audio already exists
+       */
+      async function checkExistingAudio() {
+        try {
+          const response = await fetch(`/get-audio/${sketchId}/`);
+          const data = await response.json();
+
+          if (data.status === 'exists') {
+            // Extract language from URL if possible
+            const urlMatch = data.audio_url.match(/_(\w{2})\.mp3/);
+            const lang = urlMatch ? urlMatch[1] : 'en';
+            const langName = supportedLanguages.find(l => l.code === lang)?.name || 'English';
+
+            displayAudioPlayer(data.audio_url, langName);
+            const generateBtn = document.getElementById('generate-audio-btn');
+            generateBtn.textContent = 'Regenerate Audio';
+          }
+        } catch (error) {
+          console.error('Error checking existing audio:', error);
+        }
+      }
+
+      // Set up audio button listeners
+      const generateAudioBtn = document.getElementById('generate-audio-btn');
+      const ocrAndAudioBtn = document.getElementById('ocr-and-audio-btn');
+
+      generateAudioBtn.addEventListener('click', generateAudioSummary);
+      ocrAndAudioBtn.addEventListener('click', uploadAndGenerateAudio);
+
+      // Initialize: Load languages first, then check for existing audio
+      await loadLanguages();
+      checkExistingAudio();
+    };
+  </script>
+</body>

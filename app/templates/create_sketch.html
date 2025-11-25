@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create New Sketch</title>
+    <style>
+      :root {
+        --primary: #4361ee;
+        --primary-hover: #3a56d4;
+        --primary-light: rgba(67, 97, 238, 0.1);
+        --dark: #2b2d42;
+        --light: #f8f9fa;
+        --gray: #6c757d;
+        --light-gray: #dee2e6;
+        --border-radius: 8px;
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: #f5f7fa;
+        color: var(--dark);
+        line-height: 1.6;
+      }
+
+      .content-container {
+        max-width: 700px;
+        margin: 2rem auto 4rem;
+        padding: 0 1.5rem;
+      }
+
+      .form-container {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .page-title {
+        font-size: 1.6rem;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--light-gray);
+      }
+
+      .page-title i {
+        font-style: italic;
+        font-weight: 500;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        font-size: 0.95rem;
+        color: var(--dark);
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border: 1px solid var(--light-gray);
+        border-radius: var(--border-radius);
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+      }
+
+      .form-control:focus {
+        border-color: var(--primary);
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        font-weight: 500;
+        text-align: center;
+        padding: 0.75rem 1.25rem;
+        font-size: 0.95rem;
+        border-radius: var(--border-radius);
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        text-decoration: none;
+      }
+
+      .btn .icon {
+        margin-right: 0.5rem;
+        font-size: 1.1rem;
+      }
+
+      .btn-primary {
+        background-color: var(--primary);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background-color: var(--primary-hover);
+      }
+
+      .btn-link {
+        color: var(--primary);
+        background-color: transparent;
+        padding: 0.5rem 0;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .btn-link:hover {
+        color: var(--primary-hover);
+        text-decoration: underline;
+      }
+
+      .btn-link .icon {
+        margin-right: 0.5rem;
+      }
+
+      .actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+      }
+
+      @media (max-width: 576px) {
+        .form-container {
+          padding: 1.5rem;
+        }
+
+        .actions {
+          flex-direction: column-reverse;
+          gap: 1rem;
+        }
+
+        .btn-primary {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Include the navbar -->
+    {% include 'navbar.html' %}
+
+    <div class="content-container">
+      <div class="form-container">
+        <h2 class="page-title">
+          Create a New Sketch in <i>{{ book.title }}</i>
+        </h2>
+
+        <form method="POST">
+          {% csrf_token %}
+
+          <div class="form-group">
+            <label for="sketch-name">Sketch Name</label>
+            <input
+              type="text"
+              class="form-control"
+              id="sketch-name"
+              name="name"
+              placeholder="Enter sketch name"
+              required
+            />
+          </div>
+
+          <div class="actions">
+            <a href="{% url 'book_detail' book.id %}" class="btn-link">
+              <span class="icon">⬅️</span> Back to Book
+            </a>
+
+            <button type="submit" class="btn btn-primary">
+              <span class="icon">✏️</span> Create Sketch
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

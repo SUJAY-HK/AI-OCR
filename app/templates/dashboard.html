@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <style>
+      :root {
+        --primary: #4361ee;
+        --primary-hover: #3a56d4;
+        --primary-light: rgba(67, 97, 238, 0.1);
+        --dark: #2b2d42;
+        --light: #f8f9fa;
+        --gray: #6c757d;
+        --light-gray: #dee2e6;
+        --success: #4caf50;
+        --success-light: rgba(76, 175, 80, 0.1);
+        --danger: #ef233c;
+        --border-radius: 8px;
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: #f5f7fa;
+        color: var(--dark);
+        line-height: 1.6;
+      }
+
+      /* Navbar styles are now in navbar.html */
+
+      .dashboard-container {
+        max-width: 900px;
+        margin: 2rem auto 4rem;
+        padding: 0 1.5rem;
+      }
+
+      .welcome-section {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        padding: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .welcome-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .welcome-title {
+        font-size: 1.8rem;
+        color: var(--primary);
+        font-weight: 600;
+      }
+
+      .welcome-title span {
+        font-weight: 700;
+      }
+
+      .welcome-message {
+        color: var(--success);
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+      }
+
+      .welcome-message .icon {
+        margin-right: 0.5rem;
+        font-size: 1.2rem;
+      }
+
+      .action-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        font-weight: 500;
+        text-align: center;
+        padding: 0.75rem 1.25rem;
+        font-size: 0.95rem;
+        border-radius: var(--border-radius);
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        text-decoration: none;
+      }
+
+      .btn .icon {
+        margin-right: 0.5rem;
+        font-size: 1.1rem;
+      }
+
+      .btn-primary {
+        background-color: var(--primary);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background-color: var(--primary-hover);
+      }
+
+      .btn-outline-danger {
+        background-color: transparent;
+        border: 1px solid var(--danger);
+        color: var(--danger);
+      }
+
+      .btn-outline-danger:hover {
+        background-color: var(--danger);
+        color: white;
+      }
+
+      .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.25rem;
+      }
+
+      .section-title {
+        font-size: 1.4rem;
+        font-weight: 600;
+        color: var(--dark);
+        display: flex;
+        align-items: center;
+      }
+
+      .section-title .icon {
+        margin-right: 0.75rem;
+        color: var(--primary);
+      }
+
+      .sketchbook-list {
+        list-style: none;
+      }
+
+      .sketchbook-item {
+        background-color: white;
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+        border-radius: var(--border-radius);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        border-left: 4px solid var(--primary);
+        transition: transform 0.2s, box-shadow 0.2s;
+      }
+
+      .sketchbook-item:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow);
+      }
+
+      .sketchbook-link {
+        text-decoration: none;
+        color: var(--dark);
+        font-weight: 500;
+        font-size: 1.1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .sketchbook-link:hover {
+        color: var(--primary);
+      }
+
+      .sketchbook-link .arrow {
+        opacity: 0;
+        transform: translateX(-5px);
+        transition: all 0.2s;
+      }
+
+      .sketchbook-item:hover .arrow {
+        opacity: 1;
+        transform: translateX(0);
+      }
+
+      .empty-message {
+        background-color: var(--primary-light);
+        padding: 1.5rem;
+        border-radius: var(--border-radius);
+        text-align: center;
+        color: var(--primary);
+        font-weight: 500;
+      }
+
+      .empty-message .icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        display: block;
+      }
+
+      /* Welcome Animation Styles */
+      .welcome-animation-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: overlayFadeIn 0.5s ease-out forwards;
+      }
+
+      .welcome-animation-content {
+        position: relative;
+        width: 80%;
+        max-width: 600px;
+        background-color: white;
+        border-radius: var(--border-radius);
+        padding: 3rem;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        transform: translateY(50px);
+        opacity: 0;
+        animation: contentSlideUp 0.8s ease-out 0.3s forwards;
+        overflow: hidden;
+      }
+
+      .welcome-animation-content::before,
+      .welcome-animation-content::after {
+        content: "";
+        position: absolute;
+        height: 100%;
+        width: 50%;
+        top: 0;
+        background-color: var(--primary);
+        z-index: 1;
+      }
+
+      .welcome-animation-content::before {
+        left: 0;
+        animation: curtainLeft 1.2s ease-in-out forwards;
+      }
+
+      .welcome-animation-content::after {
+        right: 0;
+        animation: curtainRight 1.2s ease-in-out forwards;
+      }
+
+      .welcome-animation-inner {
+        position: relative;
+        z-index: 2;
+        opacity: 0;
+        animation: contentFadeIn 0.5s ease-out 1s forwards;
+      }
+
+      .welcome-animation-title {
+        font-size: 2.5rem;
+        color: var(--primary);
+        margin-bottom: 1rem;
+      }
+
+      .welcome-animation-subtitle {
+        font-size: 1.2rem;
+        color: var(--dark);
+        margin-bottom: 2rem;
+      }
+
+      .welcome-animation-icon {
+        font-size: 4rem;
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+        display: inline-block;
+        animation: pulse 2s infinite;
+      }
+
+      .close-animation {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: none;
+        border: none;
+        color: var(--dark);
+        font-size: 1.5rem;
+        cursor: pointer;
+        z-index: 3;
+        opacity: 0;
+        animation: fadeIn 0.3s ease-out 1.5s forwards;
+        transition: transform 0.2s, color 0.2s;
+      }
+
+      .close-animation:hover {
+        color: var(--danger);
+        transform: scale(1.2);
+      }
+
+      @keyframes overlayFadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes contentSlideUp {
+        from {
+          transform: translateY(50px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      @keyframes curtainLeft {
+        0% {
+          transform: translateX(0);
+        }
+        100% {
+          transform: translateX(-100%);
+        }
+      }
+
+      @keyframes curtainRight {
+        0% {
+          transform: translateX(0);
+        }
+        100% {
+          transform: translateX(100%);
+        }
+      }
+
+      @keyframes contentFadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes pulse {
+        0% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+        100% {
+          transform: scale(1);
+        }
+      }
+
+      .welcome-animation-hidden {
+        display: none;
+      }
+
+      .welcome-animation-exit {
+        animation: overlayFadeOut 0.5s ease-out forwards;
+      }
+
+      @keyframes overlayFadeOut {
+        from {
+          opacity: 1;
+        }
+        to {
+          opacity: 0;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .welcome-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .action-buttons {
+          margin-top: 1rem;
+          width: 100%;
+        }
+
+        .btn {
+          width: 100%;
+          justify-content: center;
+        }
+
+        .welcome-animation-content {
+          width: 95%;
+          padding: 2rem;
+        }
+
+        .welcome-animation-title {
+          font-size: 2rem;
+        }
+        /* === Animation overlay === */
+        .welcome-animation-overlay {
+          animation: fadeInOverlay 0.6s ease forwards;
+        }
+
+        .welcome-animation-exit {
+          animation: fadeOutOverlay 0.5s ease forwards;
+        }
+
+        @keyframes fadeInOverlay {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+
+        @keyframes fadeOutOverlay {
+          from {
+            opacity: 1;
+          }
+          to {
+            opacity: 0;
+          }
+        }
+
+        /* === Inner box animation === */
+        .welcome-box {
+          animation: popInBox 0.6s ease forwards;
+          transform: scale(0.95);
+          opacity: 0;
+        }
+
+        .welcome-animation-overlay .welcome-box {
+          animation-delay: 0.1s;
+        }
+
+        @keyframes popInBox {
+          from {
+            transform: scale(0.95);
+            opacity: 0;
+          }
+          to {
+            transform: scale(1);
+            opacity: 1;
+          }
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Include the navbar template -->
+    {% include 'navbar.html' %}
+
+    <!-- Welcome Animation Overlay -->
+    <div
+      id="welcomeAnimation"
+      class="welcome-animation-overlay"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.8);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      "
+    >
+      <div
+        class="welcome-box"
+        style="
+          position: relative;
+          width: 80%;
+          max-width: 600px;
+          background-color: white;
+          border-radius: 8px;
+          padding: 3rem;
+          text-align: center;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+          transform: translateY(0);
+          opacity: 1;
+        "
+      >
+        <button
+          id="closeAnimation"
+          style="
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: #2b2d42;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 3;
+          "
+        >
+          ×
+        </button>
+        <div style="position: relative; z-index: 2; opacity: 1">
+          <div style="font-size: 4rem; color: #4361ee; margin-bottom: 1.5rem">
+            🎨
+          </div>
+          <h1 style="font-size: 2.5rem; color: #4361ee; margin-bottom: 1rem">
+            Welcome, {{ user.username }}!
+          </h1>
+          <p style="font-size: 1.2rem; color: #2b2d42; margin-bottom: 2rem">
+            Ready to unleash your creativity? Your sketch books await.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-container">
+      <div class="welcome-section">
+        <div class="welcome-header">
+          <h1 class="welcome-title">
+            Hello, <span>{{ user.username }}</span> 👋
+          </h1>
+        </div>
+
+        <div class="welcome-message">
+          <span class="icon">✓</span> You are successfully logged in!
+        </div>
+
+        <div class="action-buttons">
+          <a href="{% url 'create_sketch' %}" class="btn btn-primary">
+            <span class="icon">➕</span> Create New Sketch
+          </a>
+          <form method="post" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-outline-danger">
+              <span class="icon">🚪</span> Logout
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <h2 class="section-title">
+          <span class="icon">📚</span> Your Sketch Books
+        </h2>
+      </div>
+
+      <ul class="sketchbook-list">
+        {% for book in my_books %}
+        <li class="sketchbook-item">
+          <a href="{% url 'book_detail' book.id %}" class="sketchbook-link">
+            {{ book.name }}
+            <span class="arrow">→</span>
+          </a>
+        </li>
+        {% empty %}
+        <li class="empty-message">
+          <span class="icon">📝</span>
+          No books found. Create one to get started!
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </body>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const animationOverlay = document.getElementById("welcomeAnimation");
+      const closeBtn = document.getElementById("closeAnimation");
+
+      closeBtn.addEventListener("click", function () {
+        animationOverlay.classList.add("welcome-animation-exit");
+        setTimeout(() => {
+          animationOverlay.style.display = "none";
+        }, 500); // Matches fadeOutOverlay duration
+      });
+    });
+  </script>
+</html>

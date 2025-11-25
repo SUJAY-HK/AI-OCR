@@ -1,0 +1,135 @@
+{% include 'navbar.html' %}
+
+<style>
+  :root {
+    --primary: #4361ee;
+    --primary-hover: #3a56d4;
+    --primary-light: rgba(67, 97, 238, 0.1);
+    --dark: #2b2d42;
+    --light: #f8f9fa;
+    --gray: #6c757d;
+    --light-gray: #dee2e6;
+    --border-radius: 8px;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  body {
+    background-color: #f5f7fa;
+  }
+
+  .content-container {
+    max-width: 800px;
+    margin: 2rem auto 4rem;
+    padding: 0 1.5rem;
+  }
+
+  .book-header {
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .book-header h2 {
+    font-size: 2rem;
+    color: var(--primary);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+  }
+
+  .book-header h2 .icon {
+    margin-right: 0.5rem;
+  }
+
+  .book-header p {
+    color: var(--dark);
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+  }
+
+  .sketches-section {
+    background: white;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: 1.5rem 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .sketches-section h3 {
+    color: var(--primary);
+    margin-bottom: 1rem;
+    font-size: 1.3rem;
+  }
+
+  .sketch-list {
+    list-style: none;
+    padding: 0;
+  }
+
+  .sketch-list li {
+    background: var(--primary-light);
+    padding: 12px 18px;
+    margin-bottom: 12px;
+    border-left: 4px solid var(--primary);
+    border-radius: 6px;
+    transition: background 0.3s;
+  }
+
+  .sketch-list li a {
+    text-decoration: none;
+    color: var(--dark);
+    font-weight: 500;
+  }
+
+  .sketch-list li:hover {
+    background: rgba(67, 97, 238, 0.15);
+  }
+
+  .create-btn {
+    display: inline-block;
+    background-color: var(--primary);
+    color: white;
+    padding: 10px 16px;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.2s;
+  }
+
+  .create-btn:hover {
+    background-color: var(--primary-hover);
+  }
+</style>
+
+<div class="content-container">
+  <div class="book-header">
+    <h2><span class="icon">📘</span> {{ book.name }}</h2>
+    <p><strong>Created by:</strong> {{ book.created_by.username }}</p>
+    <p>
+      <strong>Collaborators:</strong>
+      {% if book.collaborators.exists %} {{ book.collaborators.all|join:", " }}
+      {% else %}
+      <span style="color: #999">No collaborators yet.</span>
+      {% endif %}
+    </p>
+  </div>
+
+  <div class="sketches-section">
+    <h3>📄 Sketches in this Book</h3>
+    <ul class="sketch-list">
+      {% for sketch in sketches %}
+      <li>
+        <a href="/sketch/{{ sketch.id }}/">{{ sketch.name }}</a>
+      </li>
+      {% empty %}
+      <li style="color: #777">No sketches yet.</li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <a href="/book/{{ book.id }}/create-sketch/" class="create-btn">
+    ✏️ Create a New Sketch
+  </a>
+</div>

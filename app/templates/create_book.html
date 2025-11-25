@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create New Sketchbook</title>
+    <style>
+      :root {
+        --primary: #4361ee;
+        --primary-hover: #3a56d4;
+        --primary-light: rgba(67, 97, 238, 0.1);
+        --dark: #2b2d42;
+        --light: #f8f9fa;
+        --gray: #6c757d;
+        --light-gray: #dee2e6;
+        --border-radius: 8px;
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: #f5f7fa;
+        color: var(--dark);
+        line-height: 1.6;
+      }
+
+      .content-container {
+        max-width: 700px;
+        margin: 2rem auto 4rem;
+        padding: 0 1.5rem;
+      }
+
+      .form-container {
+        background-color: white;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow);
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .page-title {
+        font-size: 1.6rem;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--light-gray);
+        display: flex;
+        align-items: center;
+      }
+
+      .page-title .icon {
+        margin-right: 0.75rem;
+        font-size: 1.5rem;
+      }
+
+      .form-group {
+        margin-bottom: 1.5rem;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        font-size: 0.95rem;
+        color: var(--dark);
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border: 1px solid var(--light-gray);
+        border-radius: var(--border-radius);
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+      }
+
+      .form-control:focus {
+        border-color: var(--primary);
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(67, 97, 238, 0.25);
+      }
+
+      .form-text {
+        display: block;
+        margin-top: 0.5rem;
+        font-size: 0.85rem;
+        color: var(--gray);
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        font-weight: 500;
+        text-align: center;
+        padding: 0.75rem 1.25rem;
+        font-size: 0.95rem;
+        border-radius: var(--border-radius);
+        border: none;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+        text-decoration: none;
+      }
+
+      .btn .icon {
+        margin-right: 0.5rem;
+        font-size: 1.1rem;
+      }
+
+      .btn-primary {
+        background-color: var(--primary);
+        color: white;
+      }
+
+      .btn-primary:hover {
+        background-color: var(--primary-hover);
+      }
+
+      .actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        margin-top: 1.5rem;
+      }
+
+      .form-footer {
+        margin-top: 1.5rem;
+        text-align: center;
+        font-size: 0.9rem;
+        color: var(--gray);
+      }
+
+      .form-footer a {
+        color: var(--primary);
+        text-decoration: none;
+      }
+
+      .form-footer a:hover {
+        text-decoration: underline;
+      }
+
+      @media (max-width: 576px) {
+        .form-container {
+          padding: 1.5rem;
+        }
+
+        .actions {
+          flex-direction: column;
+          width: 100%;
+        }
+
+        .btn-primary {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Include the navbar -->
+    {% include 'navbar.html' %}
+
+    <div class="content-container">
+      <div class="form-container">
+        <h2 class="page-title">
+          <span class="icon">📘</span> Create a New Sketchbook
+        </h2>
+
+        <form method="POST">
+          {% csrf_token %}
+
+          <div class="form-group">
+            <label for="book-title">Book Title</label>
+            <input
+              type="text"
+              class="form-control"
+              id="book-title"
+              name="title"
+              placeholder="Enter book title"
+              required
+            />
+          </div>
+
+          <div class="actions">
+            <button type="submit" class="btn btn-primary">
+              <span class="icon">📚</span> Create Sketchbook
+            </button>
+          </div>
+        </form>
+
+        <div class="form-footer"></div>
+      </div>
+    </div>
+  </body>
+</html>

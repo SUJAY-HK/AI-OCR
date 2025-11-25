@@ -1,0 +1,153 @@
+/* Global Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+}
+
+/* Navbar Styles */
+.navbar {
+    background-color: #7e22ce;
+    padding: 10px 20px;
+    color: white;
+    font-size: 16px;
+    text-align: center;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    padding: 10px;
+}
+
+.navbar a:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}
+
+/* Controls Panel Styles */
+#controls {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 250px;
+    font-size: 14px;
+}
+
+#controls input,
+#controls button,
+#controls label {
+    font-family: 'Arial', sans-serif;
+    margin-bottom: 12px;
+    width: 100%;
+}
+
+#controls input[type="text"] {
+    padding: 8px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+#controls button {
+    padding: 8px;
+    font-size: 16px;
+    background-color: #7e22ce;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+#controls button:hover {
+    background-color: #5b16b1;
+}
+
+#controls button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+#controls button#clearAllBtn {
+    background-color: #f88;
+}
+
+#controls button#clearAllBtn:hover {
+    background-color: #f55;
+}
+
+#ocrResult {
+    margin-top: 12px;
+    padding: 12px;
+    background: #f9f9f9;
+    border-radius: 6px;
+    max-width: 100%;
+    /* white-space: pre-wrap; */
+    overflow-x: auto;
+    color: #333;
+}
+
+label {
+    font-weight: bold;
+}
+
+input[type="range"] {
+    width: 100%;
+}
+
+/* Canvas Styles */
+#fabricCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: white;
+    border: 1px solid #ccc;
+}
+
+/* Floating Action Buttons */
+button {
+    border-radius: 6px;
+    padding: 10px;
+    width: 100%;
+    background-color: #7e22ce;
+    color: white;
+    margin-top: 6px;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #5b16b1;
+}
+
+/* Styling for the Canvas Control Panel */
+button#eraserBtn {
+    background-color: #fdd;
+}
+
+button#eraserBtn.active {
+    background-color: #fbb;
+}
+
+/* Mobile Responsive */
+@media (max-width: 600px) {
+    #controls {
+        width: 200px;
+        padding: 15px;
+    }
+
+    #controls input {
+        width: 100%;
+    }
+
+    #fabricCanvas {
+        width: 100%;
+        height: 100vh;
+    }
+}

@@ -1,0 +1,46 @@
+/* Navbar Styling */
+nav {
+    background-color: #7E22CE;  /* Purple background */
+    color: white;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: sans-serif;
+    position: fixed;  /* Fix navbar at the top */
+    width: 97%;  /* Ensure full-width */
+    top: 0;  /* Pin to the top */
+    z-index: 1000;  /* Ensure navbar is on top of other content */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);  /* Add subtle shadow for separation */
+    left: 0;  /* Ensure navbar stretches full-width */
+  }
+  
+  /* Navbar link alignment */
+  nav .nav-left, nav .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  
+  /* Links in the navbar */
+  nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  nav a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Username styling */
+  .username {
+    font-style: italic;
+    color: #ddd;
+  }
+  
+  /* Add some space to body so navbar doesn't overlap content */
+  body {
+    padding-top: 80px;  /* Adjust for the fixed navbar height */
+  }
+  

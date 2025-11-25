@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Navbar Component</title>
+    <style>
+      :root {
+        --primary: #4361ee;
+        --primary-hover: #3a56d4;
+        --primary-dark: #2a46cc;
+        --dark: #2b2d42;
+        --light: #f8f9fa;
+        --gray: #6c757d;
+        --light-gray: #dee2e6;
+        --accent: #7209b7;
+        --accent-hover: #5a0896;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      .navbar {
+        background-color: var(--primary);
+        color: white;
+        padding: 0.85rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        position: relative;
+        z-index: 1000;
+      }
+
+      .navbar-brand {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: white;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+      }
+
+      .navbar-brand .icon {
+        margin-right: 0.5rem;
+        font-size: 1.4rem;
+      }
+
+      .navbar-left,
+      .navbar-right {
+        display: flex;
+        align-items: center;
+      }
+
+      .navbar-nav {
+        display: flex;
+        list-style: none;
+        gap: 1.5rem;
+        margin: 0;
+        padding: 0;
+      }
+
+      .nav-item {
+        position: relative;
+      }
+
+      .nav-link {
+        color: rgba(255, 255, 255, 0.85);
+        text-decoration: none;
+        font-size: 0.95rem;
+        font-weight: 500;
+        padding: 0.5rem 0;
+        transition: color 0.2s ease;
+        display: flex;
+        align-items: center;
+      }
+
+      .nav-link .icon {
+        margin-right: 0.4rem;
+      }
+
+      .nav-link:hover {
+        color: white;
+      }
+
+      .nav-link.active {
+        color: white;
+        font-weight: 600;
+      }
+
+      .nav-link.active::after {
+        content: "";
+        position: absolute;
+        bottom: -0.5rem;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background-color: white;
+        border-radius: 3px;
+      }
+
+      .nav-divider {
+        height: 24px;
+        width: 1px;
+        background-color: rgba(255, 255, 255, 0.3);
+        margin: 0 0.75rem;
+      }
+
+      .username {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.8);
+        margin-right: 1rem;
+        display: flex;
+        align-items: center;
+      }
+
+      .username .icon {
+        margin-right: 0.4rem;
+      }
+
+      .btn-outline-light {
+        background-color: transparent;
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        color: white;
+        padding: 0.4rem 1rem;
+        border-radius: 4px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+      }
+
+      .btn-outline-light:hover {
+        background-color: white;
+        color: var(--primary);
+      }
+
+      /* PDF Summary Button - Special styling */
+      .btn-pdf-summary {
+        background: linear-gradient(
+          135deg,
+          var(--accent) 0%,
+          var(--accent-hover) 100%
+        );
+        color: white;
+        border: none;
+        padding: 0.5rem 1.2rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 8px rgba(114, 9, 183, 0.3);
+        cursor: pointer;
+        margin-right: 1rem;
+      }
+
+      .btn-pdf-summary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(114, 9, 183, 0.5);
+        background: linear-gradient(
+          135deg,
+          var(--accent-hover) 0%,
+          var(--accent) 100%
+        );
+      }
+
+      .btn-pdf-summary:active {
+        transform: translateY(0);
+      }
+
+      .btn-pdf-summary .icon {
+        font-size: 1.1rem;
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.7;
+        }
+      }
+
+      /* Badge for "New" indicator */
+      .badge-new {
+        background-color: #ff006e;
+        color: white;
+        font-size: 0.65rem;
+        padding: 0.15rem 0.4rem;
+        border-radius: 10px;
+        font-weight: 600;
+        margin-left: 0.3rem;
+        animation: blink 1.5s ease-in-out infinite;
+      }
+
+      @keyframes blink {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.5;
+        }
+      }
+
+      /* Mobile menu button */
+      .navbar-toggler {
+        display: none;
+        background: transparent;
+        border: none;
+        color: white;
+        font-size: 1.5rem;
+        cursor: pointer;
+      }
+
+      /* Media queries for responsive design */
+      @media (max-width: 768px) {
+        .navbar {
+          padding: 0.75rem 1.25rem;
+        }
+
+        .navbar-toggler {
+          display: block;
+        }
+
+        .navbar-collapse {
+          position: fixed;
+          top: 60px;
+          left: 0;
+          width: 100%;
+          height: 0;
+          overflow: hidden;
+          background-color: var(--primary-dark);
+          transition: height 0.3s ease;
+          display: flex;
+          flex-direction: column;
+        }
+
+        .navbar-collapse.show {
+          height: auto;
+          padding: 1rem;
+          box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-nav {
+          flex-direction: column;
+          gap: 1rem;
+          width: 100%;
+        }
+
+        .nav-item {
+          width: 100%;
+        }
+
+        .nav-link.active::after {
+          display: none;
+        }
+
+        .nav-divider {
+          width: 100%;
+          height: 1px;
+          margin: 0.5rem 0;
+        }
+
+        .navbar-right {
+          margin-top: 1rem;
+          width: 100%;
+          flex-direction: column;
+          gap: 0.75rem;
+        }
+
+        .btn-pdf-summary {
+          width: 100%;
+          justify-content: center;
+          margin-right: 0;
+          margin-bottom: 0.5rem;
+        }
+
+        .username {
+          margin-right: 0;
+          margin-bottom: 0.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar component -->
+    <nav class="navbar">
+      <div class="navbar-left">
+        <a href="{% url 'dashboard' %}" class="navbar-brand">
+          <span class="icon">📝</span> Sketch App
+        </a>
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a href="{% url 'dashboard' %}" class="nav-link active">
+              <span class="icon">🏠</span> Dashboard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{% url 'create_book' %}" class="nav-link">
+              <span class="icon">📘</span> New Book
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <button class="navbar-toggler">☰</button>
+
+      <div class="navbar-right">
+        {% if user.is_authenticated %}
+
+        <!-- PDF Summary Button -->
+        <a
+          href="http://localhost:8501/"
+          target="_blank"
+          class="btn-pdf-summary"
+          title="Upload PDF and get AI-powered summary"
+        >
+          <span class="icon">📄</span>
+          <span>PDF Summary</span>
+        </a>
+
+        <div class="username">
+          <span class="icon">👤</span> {{ user.username }}
+        </div>
+        <form method="post" action="{% url 'logout' %}" style="display: inline">
+          {% csrf_token %}
+          <button
+            type="submit"
+            style="
+              background-color: #ef233c;
+              color: white;
+              border: none;
+              padding: 0.75rem 1.25rem;
+              font-size: 0.95rem;
+              font-weight: 500;
+              border-radius: 8px;
+              cursor: pointer;
+              display: inline-flex;
+              align-items: center;
+              transition: background-color 0.2s ease-in-out;
+            "
+            onmouseover="this.style.backgroundColor='#c1002a'"
+            onmouseout="this.style.backgroundColor='#ef233c'"
+          >
+            <span style="margin-right: 0.5rem; font-size: 1.1rem">🚪</span>
+            Logout
+          </button>
+        </form>
+
+        {% else %}
+        <a href="{% url 'login' %}" class="btn-outline-light">Login</a>
+        {% endif %}
+      </div>
+    </nav>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const toggler = document.querySelector(".navbar-toggler");
+        const navbarRight = document.querySelector(".navbar-right");
+        const navbarNav = document.querySelector(".navbar-nav");
+
+        if (toggler) {
+          toggler.addEventListener("click", function () {
+            const collapse = document.createElement("div");
+            collapse.className = "navbar-collapse show";
+
+            // Clone the navigation items
+            const navClone = navbarNav.cloneNode(true);
+            const rightClone = navbarRight.cloneNode(true);
+
+            // Append to the collapse container
+            collapse.appendChild(navClone);
+            collapse.appendChild(document.createElement("div")).className =
+              "nav-divider";
+            collapse.appendChild(rightClone);
+
+            // Check if collapse already exists
+            const existingCollapse = document.querySelector(".navbar-collapse");
+            if (existingCollapse) {
+              existingCollapse.remove();
+            } else {
+              document.body.appendChild(collapse);
+            }
+          });
+        }
+
+        // Add smooth transition effect for PDF button
+        const pdfButton = document.querySelector(".btn-pdf-summary");
+        if (pdfButton) {
+          pdfButton.addEventListener("click", function (e) {
+            // Show loading indicator
+            this.style.opacity = "0.7";
+            this.innerHTML =
+              '<span class="icon">⏳</span><span>Opening...</span>';
+
+            // Reset after a short delay
+            setTimeout(() => {
+              this.style.opacity = "1";
+              this.innerHTML =
+                '<span class="icon">📄</span><span>PDF Summary</span><span class="badge-new">NEW</span>';
+            }, 1000);
+          });
+        }
+
+        // Optional: Check if the PDF service is running
+        const checkPDFService = async () => {
+          const pdfButton = document.querySelector(".btn-pdf-summary");
+          if (!pdfButton) return;
+
+          try {
+            const response = await fetch("http://localhost:8501/", {
+              mode: "no-cors",
+              cache: "no-cache",
+            });
+            // If we get here, service is likely running
+            console.log("✅ PDF Summary service is running");
+          } catch (error) {
+            // Service might not be running
+            console.warn(
+              "⚠️ PDF Summary service might not be running on port 8501"
+            );
+            pdfButton.title =
+              "PDF Summary (Make sure the service is running on port 8501)";
+          }
+        };
+
+        // Check service status on load
+        checkPDFService();
+      });
+    </script>
+  </body>
+</html>
