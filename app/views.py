@@ -381,7 +381,7 @@ def upload_and_generate_audio(request, sketch_id):
             audio_path = os.path.join(settings.MEDIA_ROOT, "audio_summaries", audio_filename)
             os.makedirs(os.path.dirname(audio_path), exist_ok=True)
             
-            gemini_api_key = getattr(settings, 'GEMINI_API_KEY', os.getenv('GEMINI_API_KEY', 'AIzaSyDSdDMKocKb7oBwGDRdSzgQcdSGIJk6D6g'))
+            gemini_api_key = getattr(settings, 'GEMINI_API_KEY', os.getenv('GEMINI_API_KEY'))
             
             from .audio_generator import generate_audio_summary
             generate_audio_summary(

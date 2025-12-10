@@ -1,0 +1,7 @@
+Django
+channels
+daphne
+google-generativeai
+python-dotenv
+gTTS
+Pillow
