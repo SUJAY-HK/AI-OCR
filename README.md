@@ -1,6 +1,4 @@
-Here is a professional, ready-to-use README.md for your project. You can copy the code block below directly into your repository.
 
-Markdown
 
 # 📝 AI-OCR Smart Notebook
 
