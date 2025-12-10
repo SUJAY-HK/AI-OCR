@@ -12,7 +12,7 @@
 Whether you're digitizing handwritten study notes, textbook pages, or research papers, this tool bridges the gap between physical documents and digital understanding.
 
 ## 🚀 Live Demo
-Check out the live application here: **[Link to your Render App]** *(e.g., https://ai-ocr-app.onrender.com)*
+Check out the live application here: **[Link to your Render App]** *(e.g., https://ai-ocr-lvm4.onrender.com/)*
 
 ## ✨ Key Features
 
